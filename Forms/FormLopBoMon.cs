@@ -386,7 +386,6 @@ namespace QLSinhVien.Forms
                         for (int j = 0; j < dt.Columns.Count; j++)
                             ws.Cells[i + 2, j + 1].Value = dt.Rows[i][j];
 
-                        // Tính kết quả dựa trên DiemTB
                         decimal diemTB = Convert.ToDecimal(dt.Rows[i]["DiemTB"]);
                         ws.Cells[i + 2, dt.Columns.Count + 1].Value = diemTB >= 5 ? "Đậu" : "Rớt";
                     }
@@ -404,12 +403,31 @@ namespace QLSinhVien.Forms
                     ws.Cells[lastRow + 2, 1].Value = "Số rớt:";
                     ws.Cells[lastRow + 2, 2].Value = soRot;
 
-                    pck.SaveAs(fi);
+                    // Save với xử lý lỗi
+                    try
+                    {
+                        pck.SaveAs(fi);
+                        MessageBox.Show("Xuất Excel thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (InvalidOperationException ex) when (ex.InnerException is IOException)
+                    {
+                        MessageBox.Show("Không thể ghi file Excel vì tệp đang được mở. Vui lòng đóng file rồi thử lại!",
+                                        "Lỗi ghi file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    catch (IOException)
+                    {
+                        MessageBox.Show("Không thể ghi file Excel vì tệp đang được mở. Vui lòng đóng file rồi thử lại!",
+                                        "Lỗi ghi file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Không thể ghi đè file Excel vì tệp đang được mở. Vui lòng đóng file rồi thử lại!",
+                                        "Lỗi ghi file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
-
-                MessageBox.Show("Xuất Excel thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
+
 
         private void btnImport_Click(object sender, EventArgs e)
         {
